@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "353025530362",
+    "project_id": "analisador-texto-luiz-cd73f",
+    "storage_bucket": "analisador-texto-luiz-cd73f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:353025530362:android:838cd39d000d631fe22c43",
+        "android_client_info": {
+          "package_name": "com.example.meu_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyYFga83j1VyQmNqB8w1Uw1RxIo6d3wzI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
