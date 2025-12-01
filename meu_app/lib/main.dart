@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-import 'services/database_service.dart';
+import 'firebase_options.dart';
 import 'viewmodels/cadastro_viewmodel.dart';
 import 'viewmodels/login_viewmodel.dart';
 import 'views/tela_login.dart';
@@ -9,8 +10,9 @@ import 'views/tela_login.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inicializa o banco de dados (cria se não existir)
-  await DatabaseService().db;
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(const AnalisadorDeTextoApp());
 }

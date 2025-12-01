@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../services/database_service.dart';
 import '../models/usuario.dart';
 
@@ -17,8 +18,8 @@ class LoginViewModel extends ChangeNotifier {
 
   bool get camposValidos =>
       emailController.text.trim().isNotEmpty &&
-      senhaController.text.isNotEmpty &&
-      !carregando;
+          senhaController.text.isNotEmpty &&
+          !carregando;
 
   Future<Usuario?> autenticar() async {
     if (!camposValidos) return null;
@@ -34,9 +35,11 @@ class LoginViewModel extends ChangeNotifier {
       );
 
       carregando = false;
+
       if (usuario == null) {
         erroLogin = 'E-mail ou senha incorretos.';
       }
+
       notifyListeners();
       return usuario;
     } catch (e) {

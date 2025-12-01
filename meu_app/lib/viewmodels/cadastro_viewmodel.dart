@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:brasil_fields/brasil_fields.dart';
+
 import '../services/database_service.dart';
 
 class CadastroViewModel extends ChangeNotifier {
@@ -32,14 +34,16 @@ class CadastroViewModel extends ChangeNotifier {
   bool carregando = false;
   String? erroCadastro;
 
+  bool get cpfValido => _cpfValido;
+
   bool get podeCadastrar =>
       _nomeValido &&
-      _cpfValido &&
-      _dataNascimentoValida &&
-      _emailValido &&
-      _senhaValida &&
-      _confirmarSenhaValida &&
-      !carregando;
+          _cpfValido &&
+          _dataNascimentoValida &&
+          _emailValido &&
+          _senhaValida &&
+          _confirmarSenhaValida &&
+          !carregando;
 
   void alternarVisibilidadeSenha() {
     senhaVisivel = !senhaVisivel;
@@ -57,8 +61,8 @@ class CadastroViewModel extends ChangeNotifier {
   }
 
   void validarCpf(String valor) {
-    // Exemplo simples: máscara 000.000.000-00 tem 14 caracteres
-    _cpfValido = valor.trim().length == 14;
+    final somenteDigitos = UtilBrasilFields.removeCaracteres(valor);
+    _cpfValido = UtilBrasilFields.isCPFValido(somenteDigitos);
     notifyListeners();
   }
 
@@ -69,7 +73,7 @@ class CadastroViewModel extends ChangeNotifier {
 
   void validarEmail(String valor) {
     final regex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
-    _emailValido = regex.hasMatch(valor);
+    _emailValido = regex.hasMatch(valor.trim());
     notifyListeners();
   }
 
@@ -87,7 +91,6 @@ class CadastroViewModel extends ChangeNotifier {
     _senhaValida =
         regraMaiuscula && regraMinuscula && regraNumero && regraEspecial;
 
-    // Atualiza confirmação também
     validarConfirmarSenha(valor, confirmarSenhaController.text);
     notifyListeners();
   }
@@ -107,7 +110,7 @@ class CadastroViewModel extends ChangeNotifier {
 
       await DatabaseService().cadastrarUsuario(
         nomeCompleto: nomeController.text.trim(),
-        cpf: cpfController.text.trim(),
+        cpf: UtilBrasilFields.removeCaracteres(cpfController.text.trim()),
         dataNascimento: dataNascimentoController.text.trim(),
         email: emailController.text.trim(),
         senhaPura: senhaController.text,
@@ -118,7 +121,14 @@ class CadastroViewModel extends ChangeNotifier {
       return true;
     } catch (e) {
       carregando = false;
-      erroCadastro = 'Erro ao cadastrar usuário. Verifique os dados.';
+
+      final msg = e.toString();
+      if (msg.contains('E-mail já cadastrado')) {
+        erroCadastro = 'Este e-mail já está em uso.';
+      } else {
+        erroCadastro = 'Erro ao cadastrar usuário. Tente novamente.';
+      }
+
       notifyListeners();
       return false;
     }

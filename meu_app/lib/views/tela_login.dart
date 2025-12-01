@@ -32,6 +32,7 @@ class _TelaLoginState extends State<TelaLogin> {
                 key: _formKey,
                 child: Column(
                   children: [
+                    // E-mail
                     TextFormField(
                       controller: vm.emailController,
                       decoration: const InputDecoration(
@@ -47,6 +48,8 @@ class _TelaLoginState extends State<TelaLogin> {
                       },
                     ),
                     const SizedBox(height: 12),
+
+                    // Senha
                     TextFormField(
                       controller: vm.senhaController,
                       decoration: InputDecoration(
@@ -70,54 +73,61 @@ class _TelaLoginState extends State<TelaLogin> {
                       },
                     ),
                     const SizedBox(height: 16),
+
+                    // Mensagem de erro
                     if (vm.erroLogin != null)
                       Text(
                         vm.erroLogin!,
                         style: const TextStyle(color: Colors.red),
                       ),
                     const SizedBox(height: 8),
+
+                    // Botão Entrar
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: vm.camposValidos
                             ? () async {
-                                if (_formKey.currentState!.validate()) {
-                                  final Usuario? usuario =
-                                      await vm.autenticar();
+                          if (_formKey.currentState!.validate()) {
+                            final Usuario? usuario =
+                            await vm.autenticar();
 
-                                  if (!mounted) return;
+                            if (!mounted) return;
 
-                                  if (usuario != null) {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) =>
-                                            TelaPrincipal(usuario: usuario),
-                                      ),
-                                    );
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          vm.erroLogin ??
-                                              'Falha ao realizar login',
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                }
-                              }
+                            if (usuario != null) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      TelaPrincipal(usuario: usuario),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    vm.erroLogin ??
+                                        'Falha ao realizar login',
+                                  ),
+                                ),
+                              );
+                            }
+                          }
+                        }
                             : null,
                         child: vm.carregando
                             ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
+                          height: 20,
+                          width: 20,
+                          child:
+                          CircularProgressIndicator(strokeWidth: 2),
+                        )
                             : const Text('Entrar'),
                       ),
                     ),
                     const SizedBox(height: 8),
+
+                    // Link para cadastro
                     TextButton(
                       onPressed: () {
                         Navigator.push(

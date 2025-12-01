@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+
 import '../models/usuario.dart';
 import 'tela_resultados.dart';
 
 class TelaPrincipal extends StatefulWidget {
   final Usuario usuario;
 
-  const TelaPrincipal({super.key, required this.usuario});
+  const TelaPrincipal({
+    super.key,
+    required this.usuario,
+  });
 
   @override
   State<TelaPrincipal> createState() => _TelaPrincipalState();
@@ -44,11 +48,15 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
     final textoNormalizado = textoParaAnalise.toLowerCase();
 
     final numCaracteresTotal = textoParaAnalise.length;
+
     final numCaracteresSemEspaco =
         textoParaAnalise.replaceAll(RegExp(r'\s'), "").length;
 
     final palavrasLista = textoNormalizado.split(RegExp(r'\s+'));
-    final palavrasValidas = palavrasLista.where((p) => p.isNotEmpty).toList();
+
+    final palavrasValidas =
+    palavrasLista.where((p) => p.isNotEmpty).toList();
+
     final numPalavras = palavrasValidas.length;
 
     final numFrases = textoParaAnalise
@@ -57,24 +65,29 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
         .length;
 
     final Map<String, int> frequencia = {};
+
     final RegExp pontuacaoRegex =
-        RegExp(r'[^\w\s\u00C0-\u017F]', unicode: true);
+    RegExp(r'[^\w\s\u00C0-\u017F]', unicode: true);
 
     for (var palavra in palavrasValidas) {
       final palavraLimpa = palavra.replaceAll(pontuacaoRegex, "");
+
       if (palavraLimpa.isNotEmpty && !_stopWords.contains(palavraLimpa)) {
-        frequencia[palavraLimpa] = (frequencia[palavraLimpa] ?? 0) + 1;
+        frequencia[palavraLimpa] =
+            (frequencia[palavraLimpa] ?? 0) + 1;
       }
     }
 
     final listaFrequenciaOrdenada = frequencia.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
+
     final top10Frequencia = listaFrequenciaOrdenada.take(10).toList();
 
     final tempoLeituraMinutos = numPalavras / _wpm;
     final tempoFormatado = numPalavras == 0
         ? 0.0
         : double.parse(tempoLeituraMinutos.toStringAsFixed(2));
+
     final tempoLeitura = tempoFormatado < 0.01 && numPalavras > 0
         ? '<0.01'
         : '$tempoFormatado';
@@ -102,6 +115,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
 
   void _analisarTexto() {
     final texto = _controladorTexto.text.trim();
+
     if (texto.isEmpty) {
       _analiseResultados = null;
       _showSnackBar(
@@ -113,6 +127,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
     }
 
     final resultado = _realizarAnalise(texto);
+
     setState(() {
       _analiseResultados = resultado;
     });
@@ -139,7 +154,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
         title: const Text('Confirmar Limpeza'),
         content: const SingleChildScrollView(
           child: ListBody(
-            children: <Widget>[
+            children: [
               Text(
                 'Tem certeza que deseja limpar todo o texto e os resultados da análise?',
                 style: TextStyle(fontSize: 16),
@@ -149,13 +164,15 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
                 child: Text(
                   'Esta ação não pode ser desfeita.',
                   style: TextStyle(
-                      fontStyle: FontStyle.italic, color: Colors.red),
+                    fontStyle: FontStyle.italic,
+                    color: Colors.red,
+                  ),
                 ),
               ),
             ],
           ),
         ),
-        actions: <Widget>[
+        actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Cancelar'),
@@ -198,7 +215,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
+          children: [
             Text(
               'Bem-vindo, ${widget.usuario.nomeCompleto}!',
               style: const TextStyle(
@@ -207,7 +224,6 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
               ),
             ),
             const SizedBox(height: 16),
-
             SizedBox(
               height: 200,
               child: TextField(
@@ -222,18 +238,16 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
               ),
             ),
             const SizedBox(height: 16),
-
             ElevatedButton(
               onPressed: _analisarTexto,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 15),
-                backgroundColor: Colors.blue.shade700,
+                backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,
               ),
               child: const Text('Analisar'),
             ),
             const SizedBox(height: 8),
-
             TextButton.icon(
               onPressed: _limparTexto,
               icon: const Icon(Icons.delete_outline, size: 18),
@@ -242,7 +256,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               style: TextButton.styleFrom(
-                foregroundColor: Colors.red.shade700,
+                foregroundColor: Colors.red,
               ),
             ),
           ],

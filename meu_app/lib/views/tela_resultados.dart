@@ -12,15 +12,18 @@ class TelaResultados extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final int caracteresTotal = resultados['caracteres_total'] as int;
-    final int caracteresSemEspaco = resultados['caracteres_sem_espaco'] as int;
+    final int caracteresTotal =
+    resultados['caracteres_total'] as int;
+    final int caracteresSemEspaco =
+    resultados['caracteres_sem_espaco'] as int;
     final int palavrasTotal = resultados['palavras_total'] as int;
     final int frasesTotal = resultados['frases_total'] as int;
-    final String tempoLeitura = resultados['tempo_leitura'] as String;
-    final String textoOriginal = resultados['texto_original'] as String;
-
+    final String tempoLeitura =
+    resultados['tempo_leitura'] as String;
+    final String textoOriginal =
+    resultados['texto_original'] as String;
     final List<MapEntry<String, int>> topFrequencia =
-        (resultados['top_frequencia'] as List<MapEntry<String, int>>);
+    (resultados['top_frequencia'] as List<MapEntry<String, int>>);
 
     return Scaffold(
       appBar: AppBar(
@@ -44,23 +47,23 @@ class TelaResultados extends StatelessWidget {
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
-
             _buildResultItem('Palavras Totais', '$palavrasTotal'),
             _buildResultItem('Frases Totais', '$frasesTotal'),
             const Divider(),
-
             _buildResultItem(
-                'Caracteres (com espaços)', '$caracteresTotal'),
+              'Caracteres (com espaços)',
+              '$caracteresTotal',
+            ),
             _buildResultItem(
-                'Caracteres (sem espaços)', '$caracteresSemEspaco'),
+              'Caracteres (sem espaços)',
+              '$caracteresSemEspaco',
+            ),
             const Divider(),
-
             _buildResultItem(
               'Tempo Médio de Leitura (250 WPM)',
               '$tempoLeitura min',
             ),
             const Divider(height: 30),
-
             const Text(
               'Top 10 Palavras (Mais Comuns)',
               style: TextStyle(
@@ -79,23 +82,28 @@ class TelaResultados extends StatelessWidget {
               Column(
                 children: topFrequencia.map((item) {
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    padding:
+                    const EdgeInsets.symmetric(vertical: 4.0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(item.key, style: const TextStyle(fontSize: 16)),
+                        Text(
+                          item.key,
+                          style: const TextStyle(fontSize: 16),
+                        ),
                         Text(
                           '${item.value}x',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
                   );
                 }).toList(),
               ),
-
             const SizedBox(height: 24),
-
             const Text(
               'Texto original analisado:',
               style: TextStyle(
@@ -107,7 +115,8 @@ class TelaResultados extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade400),
+                border:
+                Border.all(color: Colors.grey.shade400),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(textoOriginal),

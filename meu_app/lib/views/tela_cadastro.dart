@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:brasil_fields/brasil_fields.dart';
 
 import '../viewmodels/cadastro_viewmodel.dart';
 
@@ -27,11 +29,13 @@ class _TelaCadastroState extends State<TelaCadastro> {
               padding: const EdgeInsets.all(16),
               child: Form(
                 key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: Column(
                   children: [
                     // Nome completo
                     TextFormField(
                       controller: vm.nomeController,
+                      textCapitalization: TextCapitalization.words,
                       decoration: const InputDecoration(
                         labelText: 'Nome completo',
                         border: OutlineInputBorder(),
@@ -41,9 +45,24 @@ class _TelaCadastroState extends State<TelaCadastro> {
                         if (value == null || value.trim().isEmpty) {
                           return 'Informe o nome completo';
                         }
-                        if (value.trim().split(' ').length < 2) {
+
+                        final partes =
+                        value.trim().split(RegExp(r'\s+'));
+                        if (partes.length < 2) {
                           return 'Digite nome e sobrenome';
                         }
+
+                        // Verifica se cada parte começa com letra maiúscula
+                        final todasComMaiuscula = partes.every((p) {
+                          if (p.isEmpty) return false;
+                          final primeira = p[0];
+                          return primeira == primeira.toUpperCase();
+                        });
+
+                        if (!todasComMaiuscula) {
+                          return 'Use letra maiúscula no início de cada nome';
+                        }
+
                         return null;
                       },
                     ),
@@ -53,16 +72,20 @@ class _TelaCadastroState extends State<TelaCadastro> {
                     TextFormField(
                       controller: vm.cpfController,
                       decoration: const InputDecoration(
-                        labelText: 'CPF (000.000.000-00)',
+                        labelText: 'CPF',
                         border: OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        CpfInputFormatter(),
+                      ],
                       onChanged: vm.validarCpf,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Informe o CPF';
                         }
-                        if (value.trim().length != 14) {
+                        if (!vm.cpfValido) {
                           return 'CPF inválido';
                         }
                         return null;
@@ -118,7 +141,8 @@ class _TelaCadastroState extends State<TelaCadastro> {
                         if (value == null || value.trim().isEmpty) {
                           return 'Informe o e-mail';
                         }
-                        final regex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+                        final regex =
+                        RegExp(r'^[^@]+@[^@]+\.[^@]+$');
                         if (!regex.hasMatch(value.trim())) {
                           return 'E-mail inválido';
                         }
@@ -152,7 +176,7 @@ class _TelaCadastroState extends State<TelaCadastro> {
                             !vm.regraMinuscula ||
                             !vm.regraNumero ||
                             !vm.regraEspecial) {
-                          return 'A senha não atende todos os requisitos';
+                          return 'A senha deve ter letra maiúscula, minúscula, número e caractere especial.';
                         }
                         return null;
                       },
@@ -171,12 +195,15 @@ class _TelaCadastroState extends State<TelaCadastro> {
                                 ? Icons.visibility_off
                                 : Icons.visibility,
                           ),
-                          onPressed: vm.alternarVisibilidadeConfirmarSenha,
+                          onPressed:
+                          vm.alternarVisibilidadeConfirmarSenha,
                         ),
                       ),
                       obscureText: !vm.confirmarSenhaVisivel,
-                      onChanged: (valor) =>
-                          vm.validarConfirmarSenha(vm.senhaController.text, valor),
+                      onChanged: (valor) => vm.validarConfirmarSenha(
+                        vm.senhaController.text,
+                        valor,
+                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Confirme a senha';
@@ -193,13 +220,21 @@ class _TelaCadastroState extends State<TelaCadastro> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment:
+                        CrossAxisAlignment.start,
                         children: [
                           _regraItem(
-                              'Pelo menos 1 letra maiúscula', vm.regraMaiuscula),
+                            'Pelo menos 1 letra maiúscula',
+                            vm.regraMaiuscula,
+                          ),
                           _regraItem(
-                              'Pelo menos 1 letra minúscula', vm.regraMinuscula),
-                          _regraItem('Pelo menos 1 número', vm.regraNumero),
+                            'Pelo menos 1 letra minúscula',
+                            vm.regraMinuscula,
+                          ),
+                          _regraItem(
+                            'Pelo menos 1 número',
+                            vm.regraNumero,
+                          ),
                           _regraItem(
                             'Pelo menos 1 caractere especial (!@#...)',
                             vm.regraEspecial,
@@ -209,10 +244,12 @@ class _TelaCadastroState extends State<TelaCadastro> {
                     ),
                     const SizedBox(height: 20),
 
+                    // Mensagem geral de erro
                     if (vm.erroCadastro != null)
                       Text(
                         vm.erroCadastro!,
-                        style: const TextStyle(color: Colors.red),
+                        style:
+                        const TextStyle(color: Colors.red),
                       ),
                     const SizedBox(height: 8),
 
@@ -221,36 +258,52 @@ class _TelaCadastroState extends State<TelaCadastro> {
                       child: ElevatedButton(
                         onPressed: vm.podeCadastrar
                             ? () async {
-                                if (_formKey.currentState!.validate()) {
-                                  final ok = await vm.cadastrarUsuario();
+                          final valido =
+                          _formKey.currentState!
+                              .validate();
 
-                                  if (!mounted) return;
+                          if (!valido) {
+                            vm.erroCadastro =
+                            'Corrija os campos destacados antes de continuar.';
+                            vm.notifyListeners();
+                            return;
+                          }
 
-                                  if (ok) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                            'Usuário cadastrado com sucesso!'),
-                                      ),
-                                    );
-                                    Navigator.pop(context);
-                                  }
-                                }
-                              }
+                          final ok =
+                          await vm.cadastrarUsuario();
+
+                          if (!mounted) return;
+
+                          if (ok) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Usuário cadastrado com sucesso!',
+                                ),
+                              ),
+                            );
+                            Navigator.pop(context);
+                          }
+                        }
                             : null,
                         child: vm.carregando
                             ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
+                          height: 20,
+                          width: 20,
+                          child:
+                          CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
                             : const Text('Cadastrar'),
                       ),
                     ),
                     const SizedBox(height: 8),
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Já tem conta? Fazer login'),
+                      child: const Text(
+                          'Já tem conta? Fazer login'),
                     ),
                   ],
                 ),
