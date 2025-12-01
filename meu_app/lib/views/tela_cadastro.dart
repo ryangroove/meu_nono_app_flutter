@@ -52,7 +52,6 @@ class _TelaCadastroState extends State<TelaCadastro> {
                           return 'Digite nome e sobrenome';
                         }
 
-                        // Verifica se cada parte começa com letra maiúscula
                         final todasComMaiuscula = partes.every((p) {
                           if (p.isEmpty) return false;
                           final primeira = p[0];
@@ -115,7 +114,8 @@ class _TelaCadastroState extends State<TelaCadastro> {
                               '${selecionada.day.toString().padLeft(2, '0')}/'
                               '${selecionada.month.toString().padLeft(2, '0')}/'
                               '${selecionada.year}';
-                          vm.dataNascimentoController.text = dataFormatada;
+                          vm.dataNascimentoController.text =
+                              dataFormatada;
                           vm.validarDataNascimento(dataFormatada);
                         }
                       },
@@ -265,7 +265,6 @@ class _TelaCadastroState extends State<TelaCadastro> {
                           if (!valido) {
                             vm.erroCadastro =
                             'Corrija os campos destacados antes de continuar.';
-                            vm.notifyListeners();
                             return;
                           }
 
