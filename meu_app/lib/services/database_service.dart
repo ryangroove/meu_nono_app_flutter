@@ -1,9 +1,3 @@
-import 'dart:convert';
-import 'package:crypto/crypto.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-import '../models/usuario.dart';
-
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
   factory DatabaseService() => _instance;
@@ -42,6 +36,7 @@ class DatabaseService {
       throw Exception('E-mail já cadastrado');
     }
 
+    // Usa exatamente as mesmas chaves do toMap()
     await _usuarios.add(usuario.toMap());
   }
 
@@ -51,6 +46,7 @@ class DatabaseService {
   }) async {
     final senhaHash = gerarHashSenha(senhaPura);
 
+    // Aqui também, mesma chave 'senha_hash'
     final query = await _usuarios
         .where('email', isEqualTo: email)
         .where('senha_hash', isEqualTo: senhaHash)
@@ -58,7 +54,7 @@ class DatabaseService {
         .get();
 
     if (query.docs.isEmpty) {
-      return null;
+      return null; // e-mail ou senha incorretos
     }
 
     final data = query.docs.first.data();
