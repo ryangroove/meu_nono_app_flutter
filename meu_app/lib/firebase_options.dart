@@ -41,13 +41,12 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDBAnyl3kwWgcXUWScWKUK4HGVjvUMbXqo',
-    appId: '1:353025530362:web:86cca1d1b8c25b76e22c43',
-    messagingSenderId: '353025530362',
-    projectId: 'analisador-texto-luiz-cd73f',
-    authDomain: 'analisador-texto-luiz-cd73f.firebaseapp.com',
-    storageBucket: 'analisador-texto-luiz-cd73f.firebasestorage.app',
-    measurementId: 'G-Z6Q4H7JLWC',
+    apiKey: 'AIzaSyClcNY0fu_cOrQ-yKmAWirWm4AjZDy-Wdw',
+    appId: '1:111965627176:web:0e585103fc35af95d3661d',
+    messagingSenderId: '111965627176',
+    projectId: 'analisador-texto-1764695357',
+    authDomain: 'analisador-texto-1764695357.firebaseapp.com',
+    storageBucket: 'analisador-texto-1764695357.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -59,31 +58,30 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDZY5eIIFBUKRI_p7-usiTiSNG7dC03rDc',
-    appId: '1:353025530362:ios:ac9a1685a0c49108e22c43',
-    messagingSenderId: '353025530362',
-    projectId: 'analisador-texto-luiz-cd73f',
-    storageBucket: 'analisador-texto-luiz-cd73f.firebasestorage.app',
+    apiKey: 'AIzaSyBLVQY432edjIRNnEcP0RAU9HdQ3Hn0ju8',
+    appId: '1:111965627176:ios:9548cdf325eafe78d3661d',
+    messagingSenderId: '111965627176',
+    projectId: 'analisador-texto-1764695357',
+    storageBucket: 'analisador-texto-1764695357.firebasestorage.app',
     iosBundleId: 'com.example.meuApp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDZY5eIIFBUKRI_p7-usiTiSNG7dC03rDc',
-    appId: '1:353025530362:ios:ac9a1685a0c49108e22c43',
-    messagingSenderId: '353025530362',
-    projectId: 'analisador-texto-luiz-cd73f',
-    storageBucket: 'analisador-texto-luiz-cd73f.firebasestorage.app',
+    apiKey: 'AIzaSyBLVQY432edjIRNnEcP0RAU9HdQ3Hn0ju8',
+    appId: '1:111965627176:ios:9548cdf325eafe78d3661d',
+    messagingSenderId: '111965627176',
+    projectId: 'analisador-texto-1764695357',
+    storageBucket: 'analisador-texto-1764695357.firebasestorage.app',
     iosBundleId: 'com.example.meuApp',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyDBAnyl3kwWgcXUWScWKUK4HGVjvUMbXqo',
-    appId: '1:353025530362:web:3c2af42bfc63c8c5e22c43',
-    messagingSenderId: '353025530362',
-    projectId: 'analisador-texto-luiz-cd73f',
-    authDomain: 'analisador-texto-luiz-cd73f.firebaseapp.com',
-    storageBucket: 'analisador-texto-luiz-cd73f.firebasestorage.app',
-    measurementId: 'G-N6XKSQN3CP',
+    apiKey: 'AIzaSyClcNY0fu_cOrQ-yKmAWirWm4AjZDy-Wdw',
+    appId: '1:111965627176:web:c9ba26f3ba1648d3d3661d',
+    messagingSenderId: '111965627176',
+    projectId: 'analisador-texto-1764695357',
+    authDomain: 'analisador-texto-1764695357.firebaseapp.com',
+    storageBucket: 'analisador-texto-1764695357.firebasestorage.app',
   );
 
 }
