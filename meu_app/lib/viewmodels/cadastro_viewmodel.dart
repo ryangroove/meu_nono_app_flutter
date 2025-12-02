@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:brasil_fields/brasil_fields.dart';
-
-import '../services/database_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CadastroViewModel extends ChangeNotifier {
   // Controllers dos campos
@@ -24,7 +23,7 @@ class CadastroViewModel extends ChangeNotifier {
   bool _senhaValida = false;
   bool _confirmarSenhaValida = false;
 
-  // Regras da senha (para o check-list visual)
+  // Regras da senha (check-list visual)
   bool regraMaiuscula = false;
   bool regraMinuscula = false;
   bool regraNumero = false;
@@ -38,12 +37,12 @@ class CadastroViewModel extends ChangeNotifier {
 
   bool get podeCadastrar =>
       _nomeValido &&
-          _cpfValido &&
-          _dataNascimentoValida &&
-          _emailValido &&
-          _senhaValida &&
-          _confirmarSenhaValida &&
-          !carregando;
+      _cpfValido &&
+      _dataNascimentoValida &&
+      _emailValido &&
+      _senhaValida &&
+      _confirmarSenhaValida &&
+      !carregando;
 
   void alternarVisibilidadeSenha() {
     senhaVisivel = !senhaVisivel;
@@ -100,6 +99,7 @@ class CadastroViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // 🚀 Cadastro direto no FirebaseAuth
   Future<bool> cadastrarUsuario() async {
     if (!podeCadastrar) return false;
 
@@ -108,27 +108,31 @@ class CadastroViewModel extends ChangeNotifier {
       erroCadastro = null;
       notifyListeners();
 
-      await DatabaseService().cadastrarUsuario(
-        nomeCompleto: nomeController.text.trim(),
-        cpf: UtilBrasilFields.removeCaracteres(cpfController.text.trim()),
-        dataNascimento: dataNascimentoController.text.trim(),
+      // Cadastro no Firebase
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
-        senhaPura: senhaController.text,
+        password: senhaController.text,
       );
 
       carregando = false;
       notifyListeners();
       return true;
+    } on FirebaseAuthException catch (e) {
+      carregando = false;
+      if (e.code == 'email-already-in-use') {
+        erroCadastro = 'Este e-mail já está em uso.';
+      } else if (e.code == 'invalid-email') {
+        erroCadastro = 'E-mail inválido.';
+      } else if (e.code == 'weak-password') {
+        erroCadastro = 'Senha muito fraca.';
+      } else {
+        erroCadastro = 'Erro ao cadastrar usuário: ${e.message}';
+      }
+      notifyListeners();
+      return false;
     } catch (e) {
       carregando = false;
-
-      final msg = e.toString();
-      if (msg.contains('E-mail já cadastrado')) {
-        erroCadastro = 'Este e-mail já está em uso.';
-      } else {
-        erroCadastro = 'Erro ao cadastrar usuário. Tente novamente.';
-      }
-
+      erroCadastro = 'Erro inesperado: $e';
       notifyListeners();
       return false;
     }
