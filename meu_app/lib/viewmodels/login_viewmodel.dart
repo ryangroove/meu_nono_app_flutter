@@ -1,43 +1,67 @@
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/database_service.dart';
 import '../models/usuario.dart';
 
-// resto da classe...
+class LoginViewModel extends ChangeNotifier {
+  final emailController = TextEditingController();
+  final senhaController = TextEditingController();
 
-Future<Usuario?> autenticar() async {
-  if (!camposValidos) return null;
+  bool senhaVisivel = false;
+  bool carregando = false;
+  String? erroLogin;
 
-  try {
-    carregando = true;
-    erroLogin = null;
+  void alternarVisibilidadeSenha() {
+    senhaVisivel = !senhaVisivel;
     notifyListeners();
+  }
 
-    final cred = await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: emailController.text.trim(),
-      password: senhaController.text,
-    );
+  bool get camposValidos =>
+      emailController.text.trim().isNotEmpty &&
+      senhaController.text.isNotEmpty &&
+      !carregando;
 
-    final usuario = await DatabaseService().buscarPerfil(cred.user!.uid);
+  Future<Usuario?> autenticar() async {
+    if (!camposValidos) return null;
 
-    carregando = false;
-    notifyListeners();
+    try {
+      carregando = true;
+      erroLogin = null;
+      notifyListeners();
 
-    return usuario;
-  } on FirebaseAuthException catch (e) {
-    carregando = false;
+      final cred = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: senhaController.text,
+      );
 
-    if (e.code == 'user-not-found' || e.code == 'wrong-password') {
-      erroLogin = 'E-mail ou senha incorretos.';
-    } else {
+      final usuario = await DatabaseService().buscarPerfil(cred.user!.uid);
+
+      carregando = false;
+      notifyListeners();
+      return usuario;
+    } on FirebaseAuthException catch (e) {
+      carregando = false;
+
+      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+        erroLogin = 'E-mail ou senha incorretos.';
+      } else {
+        erroLogin = 'Erro ao realizar login. Tente novamente.';
+      }
+
+      notifyListeners();
+      return null;
+    } catch (_) {
+      carregando = false;
       erroLogin = 'Erro ao realizar login. Tente novamente.';
+      notifyListeners();
+      return null;
     }
+  }
 
-    notifyListeners();
-    return null;
-  } catch (_) {
-    carregando = false;
-    erroLogin = 'Erro ao realizar login. Tente novamente.';
-    notifyListeners();
-    return null;
+  @override
+  void dispose() {
+    emailController.dispose();
+    senhaController.dispose();
+    super.dispose();
   }
 }

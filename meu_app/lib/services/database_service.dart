@@ -21,7 +21,7 @@ class DatabaseService {
       cpf: cpf,
       dataNascimento: dataNascimento,
       email: email,
-      senhaHash: '', // pode ignorar/retirar depois
+      senhaHash: '',
     );
 
     await _usuarios.doc(uid).set(usuario.toMap());
