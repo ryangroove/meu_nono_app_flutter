@@ -1,3 +1,9 @@
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../models/usuario.dart';
+
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
   factory DatabaseService() => _instance;
@@ -27,6 +33,7 @@ class DatabaseService {
       senhaHash: senhaHash,
     );
 
+    // verifica se já existe usuário com esse e-mail
     final jaExiste = await _usuarios
         .where('email', isEqualTo: email)
         .limit(1)
@@ -36,7 +43,7 @@ class DatabaseService {
       throw Exception('E-mail já cadastrado');
     }
 
-    // Usa exatamente as mesmas chaves do toMap()
+    // grava usando o toMap(), que já usa 'senha_hash'
     await _usuarios.add(usuario.toMap());
   }
 
@@ -46,7 +53,7 @@ class DatabaseService {
   }) async {
     final senhaHash = gerarHashSenha(senhaPura);
 
-    // Aqui também, mesma chave 'senha_hash'
+    // mesmos campos usados no toMap(): email e senha_hash
     final query = await _usuarios
         .where('email', isEqualTo: email)
         .where('senha_hash', isEqualTo: senhaHash)
